@@ -27,4 +27,4 @@ if __name__ == '__main__':
         args_parser.add_argument('--config', dest='config', required=True)
         args = args_parser.parse_args()
 
-        load_data(config_path=args.congif)
+        load_data(config_path=args.config)

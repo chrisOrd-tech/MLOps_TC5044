@@ -1,0 +1,45 @@
+schema: '2.0'
+stages:
+  load_data:
+    cmd: python src/stages/load_data.py --config=params.yaml
+    deps:
+    - path: src/stages/load_data.py
+      hash: md5
+      md5: 2541565318b392edb7cdb1227d5143b5
+      size: 864
+  featurize:
+    cmd: python src/stages/feature_engineering.py --config=params.yaml
+    deps:
+    - path: data/raw/ckd-dataset-v2.csv
+      hash: md5
+      md5: 61ab026f595140bd37a11afd0cefc551
+      size: 34154
+    - path: src/stages/feature_engineering.py
+      hash: md5
+      md5: e8ff8c3df69618d2db51b85d42a34554
+      size: 1459
+    outs:
+    - path: data/processed/preprocess_ckd_dataset_v2.csv
+      hash: md5
+      md5: 8b9f2b07b362433911f7a4e0cc3f12ca
+      size: 17940
+  data_split:
+    cmd: python src/stages/data_split.py --config=params.yaml
+    deps:
+    - path: data/processed/preprocess_ckd_dataset_v2.csv
+      hash: md5
+      md5: 8b9f2b07b362433911f7a4e0cc3f12ca
+      size: 17940
+    - path: src/stages/data_split.py
+      hash: md5
+      md5: 114dc64780e0dd883938015f334c62f1
+      size: 1171
+    outs:
+    - path: data/processed/test_ckd_dataset_v2.csv
+      hash: md5
+      md5: d7ed8cdf0fb9462e18c8c7c60092b644
+      size: 3837
+    - path: data/processed/train_ckd_dataset_v2.csv
+      hash: md5
+      md5: 06cbc7a7b7cbdc09237d60987fef6df4
+      size: 14933

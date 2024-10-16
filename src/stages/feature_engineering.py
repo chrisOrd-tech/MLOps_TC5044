@@ -1,6 +1,5 @@
 import argparse
 import yaml
-from src.stages.load_data import load_data
 import pandas as pd
 from typing import Text
 
@@ -20,8 +19,11 @@ def feature_engineering(config_path: Text) -> None:
     cat_columns = config['feature_engineering']['categorical_columns']
     features_path = config['feature_engineering']['features_path']
     target_column = config['feature_engineering']['target_column']
+    raw_data = config['data']['filepath']
+    header = config['data']['header']
+    skiprows = config['data']['skiprows']
 
-    data = load_data(config_path=config_path)
+    data = pd.read_csv(raw_data, header=header, skiprows=skiprows)
     
     ordinal_encoder = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
     data[cat_columns] = ordinal_encoder.fit_transform(data[cat_columns])
