@@ -24,13 +24,13 @@ def train_model(config_path: Text) -> None:
     cv = config['train']['cv']
     model_path = config['train']['estimators'][estimator_name]['model_path']
 
-    model = train(df=train_df,
+    model_ = train(df=train_df,
                   target_column=target_column,
                   estimator_name=estimator_name,
                   param_grid=param_grid,
                   cv=cv)
     
-    joblib.dump(model, model_path)
+    joblib.dump(model_, model_path)
 
     print('Training completed and model has been saved!')
 

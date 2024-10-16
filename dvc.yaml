@@ -25,6 +25,7 @@ stages:
     cmd: python src/stages/train.py --config=params.yaml
     deps:
     - data/processed/train_ckd_dataset_v2.csv
+    - src/model/model.py
     - src/stages/train.py
     outs:
     - models/model_${train.estimator_name}.pkl
