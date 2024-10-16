@@ -43,3 +43,26 @@ stages:
       hash: md5
       md5: e4c2e012d31c089a2594fe3fdad5ab28
       size: 14772
+  train:
+    cmd: "export PYTHONPATH=$(pwd) && python src/stages/train.py --config=params.yaml\n"
+    deps:
+    - path: data/processed/train_ckd_dataset_v2.csv
+      hash: md5
+      md5: e4c2e012d31c089a2594fe3fdad5ab28
+      size: 14772
+    - path: src/model/model.py
+      hash: md5
+      md5: 8635e767d31bb69ddc545488efdc9b92
+      size: 1895
+    - path: src/stages/train.py
+      hash: md5
+      md5: 47949279468ddc306cf5fc8f0ef5f339
+      size: 1221
+    params:
+      params.yaml:
+        train.estimator_name: log_reg
+    outs:
+    - path: models/model_log_reg.pkl
+      hash: md5
+      md5: 6da51f2c6bc34240b3c2974b519a7e83
+      size: 4211
