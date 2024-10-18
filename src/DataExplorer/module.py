@@ -3,8 +3,37 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
+import yaml
+from typing import Text, List, Dict
+
 
 class DataExplorer:
+    def __init__(self, scaler = None, encoder = None) -> None:
+        self.scaler = scaler
+        self.encoder = encoder
+
+    @staticmethod
+    def load_data(config_path: Text):
+        '''
+        Load raw data.
+
+        Args:
+             config_path {Text}: path to params.yaml
+
+        Returns:
+                DataFrame with raw data
+        '''
+        config = yaml.safe_load(open(config_path))
+        raw_data = config['data']['filepath']
+        header = config['data']['header']
+        skiprows = config['data']['skiprows']
+        
+        print('Data load completed!')
+
+        df = pd.read_csv(raw_data, header=header, skiprows=skiprows)
+        
+        return df
+
     @staticmethod
     def explore_data(data: pd.DataFrame) -> None:
         '''
@@ -100,3 +129,82 @@ class DataExplorer:
         plt.figure(figsize=(12,8))
         sns.heatmap(data[quantitative_columns].corr(), annot=True, fmt='.2f')
         plt.show()
+
+    @staticmethod
+    def transform_target_column(df: pd.DataFrame, target_column: Text, transform_dict: Dict) -> pd.DataFrame:
+        '''
+        Transform the target column to the given values in transform_dict
+
+        Args:
+            df: DataFrame
+            target_column: column to be transformed
+            transform_dict: dictionary with the desired values in the target column
+
+        Returns:
+            df: transformed DataFrame
+        '''
+        pd.set_option('future.no_silent_downcasting', True)
+        df[target_column] = df[target_column].replace(transform_dict).infer_objects(copy=False)
+
+        return df
+
+    def standardize_numeric_fit_transform(self, train_df: pd.DataFrame, scaler: any) -> pd.DataFrame:
+        '''
+        Standardize with fit_transform method given the scaler
+
+        Args:
+            train_df: train DataFrame
+            scaler: scaler to be used
+
+        Returns:
+            train_df: DataFrame with numeric columns transformed
+        '''
+        train_df = pd.DataFrame(self.scaler.fit_transform(train_df), columns=train_df.columns)
+
+        return train_df
+    
+    def standardize_numeric_transform(self, test_df: pd.DataFrame) -> pd.DataFrame:
+        '''
+        Standardize with fit given the scaler
+
+        Args:
+            test: test DataFrame
+
+        Returns:
+            test_df: DataFrame with numeric columns transformed
+        '''
+        test_df = pd.DataFrame(self.scaler.transform(test_df), columns=test_df.columns)
+
+        return test_df
+
+    def categorical_encode_fit_transform(self, train_df: pd.DataFrame, encoder: any) -> pd.DataFrame:
+        '''
+        Transform categorical columns from the given DataFrame
+
+        Args:
+            df: DataFrame to transform
+            encoder: Categorical  encoder
+
+        Returns:
+            df: DataFrame with categorical columns transformed
+        '''
+        cat_columns = train_df.select_dtypes(include=['object']).columns
+        self.cat_columns = cat_columns
+        train_df[cat_columns] = encoder.fit_transform(train_df[cat_columns])
+
+        return train_df
+    
+    def categorical_encode_transform(self, test_df: pd.DataFrame) -> pd.DataFrame:
+        '''
+        Transform categorical columns from the given DataFrame
+
+        Args:
+            df: DataFrame to transform
+            encoder: Categorical  encoder
+
+        Returns:
+            df: DataFrame with categorical columns transformed
+        '''
+        test_df[self.cat_columns] = self.encoder.transform(test_df[self.cat_columns])
+
+        return test_df

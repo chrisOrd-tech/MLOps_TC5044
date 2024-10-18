@@ -3,63 +3,101 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 import os
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix, classification_report
-import DataExplorer
+from typing import Text, Dict
+
+from src.report.visualize import plot_confusion_matrix, print_classification_report
+
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, recall_score, make_scorer, ConfusionMatrixDisplay, confusion_matrix, classification_report
+
+class UnsupportedClassifier(Exception):
+    '''
+    Class to handle unsupported estimators, inherits from Exception
+    '''
+    def __init__(self, estimator_name: Text):
+        self.msg = f'Unsupported estimator: {estimator_name}'
+        super().__init__(estimator_name)
 
 class KidneyRiskModel:
-    def __init__(self, filepath: str, pipeline: Pipeline) -> None:
-        self.filepath = filepath
-        self.pipeline = pipeline
-        self.X_train, self.X_test, self.y_train, self.y_test = [None] * 4
+    def __init__(self, estimator_name: Text, X_train: pd.DataFrame, y_train: pd.DataFrame,
+                 X_test: pd.DataFrame, y_test: pd.DataFrame, params: Dict) -> None:
+        self.estimator_name = estimator_name
+        self.X_train = X_train
+        self.y_train = y_train
+        self.X_test = X_test
+        self.y_test = y_test
+        self.params = params
 
-    def load_data(self) -> None:
-        self.data = pd.read_csv(self.filepath, header=0, skiprows=[1, 2])
-        DataExplorer.explore_data(self.data)
-        DataExplorer.plot_histogram(self.data)
-        DataExplorer.count_plot(self.data)
-        DataExplorer.plot_correlation_matrix(self.data)
-        return self
-    
-    def preprocess_data(self, label_column: str) -> None:
-        X = self.data.drop(columns=label_column)
-        y = self.data[label_column].replace({'ckd':1, 'notckd':0}).infer_objects(copy=False)
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    @staticmethod
+    def get_supported_estimators() -> Dict:
+        '''
+        Returns a dictionary with supported estimators
 
-        plt.subplot(1,3,1)
-        self.y_train.value_counts().plot.pie(y=label_column, title='Proportion of each class for TRAIN set', figsize=(10,6))
+        Args:
+            None
 
-        plt.subplot(1,3,3)
-        self.y_test.value_counts().plot.pie(y=label_column, title='Proportion of each class for TEST set', figsize=(10,6))
-
-        plt.tight_layout()
-        plt.show()
-
-        return self
+        Returns:
+            Dict: supported estimators
+        '''
+        # ToDO Add more estimators in the dictionary
+        return {
+            'log_reg': LogisticRegression
+        }
     
     def train(self) -> None:
-        self.pipeline.fit(self.X_train, self.y_train)
+        '''
+        Train model
+
+        Args:
+            None
+
+        Returns:
+            None
+        '''
+        estimators = self.get_supported_estimators()
+        if self.estimator_name not in estimators.keys():
+            raise UnsupportedClassifier(estimator_name=self.estimator_name)
+        
+        estimator = estimators[self.estimator_name]
+
+        clf = estimator(**self.params)
+        print(type(self.y_train))
+
+        clf.fit(self.X_train, self.y_train)
+        
+        self.clf = clf
         return self
     
-    def evaluate(self) -> None:
-        y_hat = self.pipeline.predict(self.X_test)
-        cm = confusion_matrix(self.y_test, y_hat)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=np.unique(self.y_test))
-        disp.plot()
-        plt.show()
+    def evaluate(self, model_path: Text, target_names: Text, cm_path: Text) -> None:
+        '''
+        Evaluate model
 
-        report = classification_report(self.y_test, y_hat)
-        print('Classification report:')
-        print(report)
-        return self
+        Args:
+            model_path: path to the model to evaluate
+
+        Returns:
+            None
+        '''
+        model = self.load_model(model_path=model_path)
+
+        y_hat = model.predict(self.X_test)
+        cm = confusion_matrix(self.y_test, y_hat)
+        
+        cm_plot = plot_confusion_matrix(cm=cm, target_names=target_names)
+        cm_plot.savefig(cm_path)
+
+        print_classification_report(y_true=self.y_test, y_hat=y_hat)
     
     def cross_validation(self, cv: int = 5) -> None:
         scores = cross_val_score(self.pipeline, self.X_train, self.y_train, cv=cv)
         print(f'Average Accuracy with Cross Valdiation: {np.mean(scores) * 100:.2f}%')
         return self
     
-    def save_model(self, filename: str) -> None:
+    def save_model(self, model_path: Text) -> None:
         '''
         Saves the mode as a pkl file
 
@@ -69,14 +107,21 @@ class KidneyRiskModel:
         Returns:
             None
         '''
-        file_path = os.path.join('/home/chrisorduna/Repositories/MNA/MLOps_TC5044/models', filename)
-        with open(file_path, 'wb') as f:
-            pickle.dump(self.pipeline, f)
+        with open(model_path, 'wb') as f:
+            pickle.dump(self.clf, f)
         return self
     
-    def load_model(self, filename: str) -> None:
-        file_path = os.path.join('/home/chrisorduna/Repositories/MNA/MLOps_TC5044/models', filename)
-        with open(file_path, 'rb') as f:
-            self.pipeline = pickle.load(f)
+    def load_model(self, model_path: Text) -> None:
+        '''
+        Load saved model, given the path
+
+        Args:
+            model_path: path to the model
+
+        Returns:
+            None
+        '''
+        with open(model_path, 'rb') as f:
+            self.clf = pickle.load(f)
 
         return self

@@ -6,27 +6,23 @@ data:
   filepath: './data/raw/ckd-dataset-v2.csv'
   header: 0
   skiprows: [1,2]
-
-feature_engineering:
   target_column: 'class'
-  categorical_columns: ['sg','al','su','bgr','bu','sod','sc','pot','hemo','pcv','rbcc','wbcc','grf','stage','age']
-  features_path: './data/processed/preprocess_ckd_dataset_v2.csv'
+  target_dict: {'ckd':1, 'notckd':0}
+  clean_file: './data/processed/ckd_dataset_clean.csv'
 
-data_split:
+preprocess:
   test_size: 0.2
-  train_path: './data/processed/train_ckd_dataset_v2.csv'
-  test_path: './data/processed/test_ckd_dataset_v2.csv'
+  train_X_path: './data/processed/train_X_ckd_dataset_v2.csv'
+  train_y_path: './data/processed/train_y_ckd_dataset_v2.csv'
+  test_X_path: './data/processed/test_X_ckd_dataset_v2.csv'
+  test_y_path: './data/processed/test_y_ckd_dataset_v2.csv'
 
 train:
   # training hyperparameters
-  cv: 5
   estimator_name: log_reg
   estimators:
     log_reg: # sklearn.linear_model.LogisticRegression
-      param_grid:
-        C: [0.001]
-        max_iter: [10]
-        solver: ['lbfgs']
+      params: {'C': 0.001, 'max_iter': 10, 'solver': 'lbfgs'}
       model_path: './models/model_log_reg.pkl'
 
 evaluate:

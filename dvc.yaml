@@ -1,32 +1,29 @@
 stages:
   load_data:
-    cmd: python src/stages/load_data.py --config=params.yaml
+    cmd: |
+      export PYTHONPATH=$(pwd) && python src/stages/load_data.py --config=params.yaml
     deps:
     - src/stages/load_data.py
   
-  featurize:
-    cmd: python src/stages/feature_engineering.py --config=params.yaml
+  preprocess:
+    cmd: |
+      export PYTHONPATH=$(pwd) && python src/stages/preprocess_data.py --config=params.yaml
     deps:
-    - data/raw/ckd-dataset-v2.csv
-    - src/stages/feature_engineering.py
+    - data/processed/ckd_dataset_clean.csv
+    - src/stages/preprocess_data.py
     outs:
-    - data/processed/preprocess_ckd_dataset_v2.csv
-
-  data_split:
-    cmd: python src/stages/data_split.py --config=params.yaml
-    deps:
-    - data/processed/preprocess_ckd_dataset_v2.csv
-    - src/stages/data_split.py
-    outs:
-    - data/processed/train_ckd_dataset_v2.csv
-    - data/processed/test_ckd_dataset_v2.csv
+    - data/processed/train_X_ckd_dataset_v2.csv
+    - data/processed/train_y_ckd_dataset_v2.csv
+    - data/processed/test_X_ckd_dataset_v2.csv
+    - data/processed/test_y_ckd_dataset_v2.csv
 
   train:
     cmd: |
       export PYTHONPATH=$(pwd) && python src/stages/train.py --config=params.yaml
     deps:
-    - data/processed/train_ckd_dataset_v2.csv
-    - src/model/model.py
+    - data/processed/train_X_ckd_dataset_v2.csv
+    - data/processed/train_y_ckd_dataset_v2.csv
+    - src/KidneyRiskModel/module.py
     - src/stages/train.py
     outs:
     - models/model_${train.estimator_name}.pkl
@@ -37,7 +34,9 @@ stages:
     cmd: |
       export PYTHONPATH=$(pwd) && python src/stages/evaluate.py --config=params.yaml
     deps:
-    - data/processed/test_ckd_dataset_v2.csv
+    - data/processed/test_X_ckd_dataset_v2.csv
+    - data/processed/test_y_ckd_dataset_v2.csv
+    - src/KidneyRiskModel/module.py
     - models/model_${train.estimator_name}.pkl
     - src/stages/evaluate.py
     outs:

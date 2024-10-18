@@ -4,7 +4,7 @@ import joblib
 import pandas as pd
 from typing import Text
 
-from src.model.model import train
+from src.KidneyRiskModel.module import KidneyRiskModel
 
 def train_model(config_path: Text) -> None:
     '''
@@ -18,19 +18,16 @@ def train_model(config_path: Text) -> None:
     '''
     config = yaml.safe_load(open(config_path))
     estimator_name = config['train']['estimator_name']
-    train_df = pd.read_csv(config['data_split']['train_path'])
-    target_column = config['feature_engineering']['target_column']
-    param_grid = config['train']['estimators'][estimator_name]['param_grid']
-    cv = config['train']['cv']
+    X_train_df = pd.read_csv(config['preprocess']['train_X_path'])
+    y_train_df = pd.read_csv(config['preprocess']['train_y_path'])
+    params = config['train']['estimators'][estimator_name]['params']
     model_path = config['train']['estimators'][estimator_name]['model_path']
 
-    model_ = train(df=train_df,
-                  target_column=target_column,
-                  estimator_name=estimator_name,
-                  param_grid=param_grid,
-                  cv=cv)
+    model = KidneyRiskModel(estimator_name=estimator_name, X_train=X_train_df, y_train=y_train_df['class'], X_test=None, y_test=None, params=params)
+
+    model.train()
     
-    joblib.dump(model_, model_path)
+    model.save_model(model_path=model_path)
 
     print('Training completed and model has been saved!')
 
