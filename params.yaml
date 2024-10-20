@@ -1,0 +1,41 @@
+base:
+  random_seed: 42
+
+data:
+  # loading data
+  filepath: './data/raw/ckd-dataset-v2.csv'
+  header: 0
+  skiprows: [1,2]
+  target_column: 'class'
+  target_dict: {'ckd':1, 'notckd':0}
+  clean_file: './data/processed/ckd_dataset_clean.csv'
+
+preprocess:
+  test_size: 0.2
+  train_X_path: './data/processed/train_X_ckd_dataset_v2.csv'
+  train_y_path: './data/processed/train_y_ckd_dataset_v2.csv'
+  test_X_path: './data/processed/test_X_ckd_dataset_v2.csv'
+  test_y_path: './data/processed/test_y_ckd_dataset_v2.csv'
+
+train:
+  # training hyperparameters
+  estimator_name: log_reg
+  estimators:
+    log_reg: # sklearn.linear_model.LogisticRegression
+      params: {'C': 0.001, 'max_iter': 10, 'solver': 'lbfgs'}
+      model_path: './models/model_log_reg.pkl'
+  # Model 2
+  estimator_name: svc_model
+  estimators:
+    svc_model: # sklearn.svm.SVC
+      params: {'C': 0.9643857615941438, 'degree': 3, 'gamma': '0.1', 'kernel': 'rbf', 'tol': 0.01}
+      model_path: './models/model_SVC.pkl'
+
+evaluate:
+  # metrics, images, etc.
+  reports_dir: './reports'
+  target_names: ['not_ckd', 'ckd']
+  estimators:
+    log_reg:
+      metrics_file: 'metrics_log_reg.json'
+      confusion_matrix_img: 'confusion_matrix_log_reg.png'

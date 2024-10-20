@@ -1,0 +1,46 @@
+stages:
+  load_data:
+    cmd: |
+      export PYTHONPATH=$(pwd) && python src/stages/load_data.py --config=params.yaml
+    deps:
+    - src/stages/load_data.py
+  
+  preprocess:
+    cmd: |
+      export PYTHONPATH=$(pwd) && python src/stages/preprocess_data.py --config=params.yaml
+    deps:
+    - data/processed/ckd_dataset_clean.csv
+    - src/stages/preprocess_data.py
+    outs:
+    - data/processed/train_X_ckd_dataset_v2.csv
+    - data/processed/train_y_ckd_dataset_v2.csv
+    - data/processed/test_X_ckd_dataset_v2.csv
+    - data/processed/test_y_ckd_dataset_v2.csv
+
+  train:
+    cmd: |
+      export PYTHONPATH=$(pwd) && python src/stages/train.py --config=params.yaml
+    deps:
+    - data/processed/train_X_ckd_dataset_v2.csv
+    - data/processed/train_y_ckd_dataset_v2.csv
+    - src/KidneyRiskModel/module.py
+    - src/stages/train.py
+    outs:
+    - models/model_${train.estimator_name}.pkl
+    params:
+    - train.estimator_name
+
+  evaluate:
+    cmd: |
+      export PYTHONPATH=$(pwd) && python src/stages/evaluate.py --config=params.yaml
+    deps:
+    - data/processed/test_X_ckd_dataset_v2.csv
+    - data/processed/test_y_ckd_dataset_v2.csv
+    - src/KidneyRiskModel/module.py
+    - models/model_${train.estimator_name}.pkl
+    - src/stages/evaluate.py
+    outs:
+    - reports/confusion_matrix_${train.estimator_name}.png
+    - reports/metrics_${train.estimator_name}.json
+    params:
+    - train.estimator_name
