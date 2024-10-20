@@ -24,6 +24,12 @@ train:
     log_reg: # sklearn.linear_model.LogisticRegression
       params: {'C': 0.001, 'max_iter': 10, 'solver': 'lbfgs'}
       model_path: './models/model_log_reg.pkl'
+  # Model 2
+  estimator_name: svc_model
+  estimators:
+    svc_model: # sklearn.svm.SVC
+      params: {'C': 0.9643857615941438, 'degree': 3, 'gamma': '0.1', 'kernel': 'rbf', 'tol': 0.01}
+      model_path: './models/model_SVC.pkl'
 
 evaluate:
   # metrics, images, etc.

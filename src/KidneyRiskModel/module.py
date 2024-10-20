@@ -45,7 +45,8 @@ class KidneyRiskModel:
         '''
         # ToDO Add more estimators in the dictionary
         return {
-            'log_reg': LogisticRegression
+            'log_reg': LogisticRegression,
+            'svc_model': SVC
         }
     
     def train(self) -> None:
