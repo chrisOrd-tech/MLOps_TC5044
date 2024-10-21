@@ -1,0 +1,16 @@
+artifact_uri: file:///home/chrisorduna/Repositories/MNA/MLOps_TC5044/mlruns/169516849048498752/6d56d4ba9bf1449e910fcac77cd3ee89/artifacts
+deleted_time: 1729483188018
+end_time: 1729482414487
+entry_point_name: ''
+experiment_id: '169516849048498752'
+lifecycle_stage: deleted
+run_id: 6d56d4ba9bf1449e910fcac77cd3ee89
+run_name: knn_model_test
+run_uuid: 6d56d4ba9bf1449e910fcac77cd3ee89
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1729482412537
+status: 3
+tags: []
+user_id: chrisorduna

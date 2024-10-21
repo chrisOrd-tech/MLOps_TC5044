@@ -56,8 +56,8 @@ stages:
       size: 880
     - path: src/KidneyRiskModel/module.py
       hash: md5
-      md5: 7d021a309db00bcac4d9e7bbfc777b25
-      size: 3625
+      md5: 83e8ff7daa011d4f78393b830fc0476b
+      size: 4865
     - path: src/stages/train.py
       hash: md5
       md5: b1c3b092de70a78ffa3a75e6703b337e
@@ -68,7 +68,7 @@ stages:
     outs:
     - path: models/model_log_reg.pkl
       hash: md5
-      md5: d73a8f984b8c48a23b06cda5b0ef207d
+      md5: 93f0b512dd1e3095ddbbc3f83edf8bb6
       size: 1257
   evaluate:
     cmd: "export PYTHONPATH=$(pwd) && python src/stages/evaluate.py --config=params.yaml\n"
@@ -83,28 +83,19 @@ stages:
       size: 224
     - path: models/model_log_reg.pkl
       hash: md5
-      md5: d73a8f984b8c48a23b06cda5b0ef207d
+      md5: 93f0b512dd1e3095ddbbc3f83edf8bb6
       size: 1257
     - path: src/KidneyRiskModel/module.py
       hash: md5
-      md5: 7d021a309db00bcac4d9e7bbfc777b25
-      size: 3625
+      md5: 83e8ff7daa011d4f78393b830fc0476b
+      size: 4865
     - path: src/stages/evaluate.py
       hash: md5
-      md5: 6eddc2a97eb95d33f6e889038733d21a
-      size: 1370
+      md5: 62e92fd19f09fa6ad77a2aaf5123d721
+      size: 1452
     params:
       params.yaml:
         train.estimator_name: log_reg
-    outs:
-    - path: reports/confusion_matrix_log_reg.png
-      hash: md5
-      md5: dd4ec9431bbf3d4200caf74f3e2ce1ab
-      size: 19425
-    - path: reports/metrics_log_reg.json
-      hash: md5
-      md5: 3b03fc3290c29ac5a60f97332dbc5645
-      size: 30
   preprocess:
     cmd: "export PYTHONPATH=$(pwd) && python src/stages/preprocess_data.py --config=params.yaml\n"
     deps:

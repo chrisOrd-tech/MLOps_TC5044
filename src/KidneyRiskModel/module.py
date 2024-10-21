@@ -13,7 +13,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, recall_score, make_scorer, ConfusionMatrixDisplay, confusion_matrix, classification_report
-
+import mlflow
+import mlflow.sklearn
 class UnsupportedClassifier(Exception):
     '''
     Class to handle unsupported estimators, inherits from Exception
@@ -46,7 +47,8 @@ class KidneyRiskModel:
         # ToDO Add more estimators in the dictionary
         return {
             'log_reg': LogisticRegression,
-            'svc_model': SVC
+            'svc_model': SVC,
+            'knn_model': KNeighborsClassifier
         }
     
     def train(self) -> None:
@@ -59,6 +61,8 @@ class KidneyRiskModel:
         Returns:
             None
         '''
+        mlflow.set_experiment(f"ckd-experiment_{self.estimator_name}_train")
+
         estimators = self.get_supported_estimators()
         if self.estimator_name not in estimators.keys():
             raise UnsupportedClassifier(estimator_name=self.estimator_name)
@@ -68,7 +72,16 @@ class KidneyRiskModel:
         clf = estimator(**self.params)
         print(type(self.y_train))
 
-        clf.fit(self.X_train, self.y_train)
+        with mlflow.start_run(run_name=f'{self.estimator_name}_train'):
+            clf.fit(self.X_train, self.y_train)
+            mlflow.log_params(self.params)
+            # Calculate metrics
+            y_hat = clf.predict(self.X_train)
+            acc = accuracy_score(self.y_train, y_hat)
+            # prec = precision_score(y_test, y_pred, average='weighted')
+            rec = recall_score(self.y_train, y_hat, average='weighted')
+            mlflow.log_metrics({"accuracy": acc, "recall": rec})
+            mlflow.sklearn.log_model(clf, artifact_path="models")
         
         self.clf = clf
         return self
@@ -83,15 +96,24 @@ class KidneyRiskModel:
         Returns:
             None
         '''
-        model = self.load_model(model_path=model_path)
+        mlflow.set_experiment(f"ckd-experiment_{self.estimator_name}_evaluate")
 
-        y_hat = model.predict(self.X_test)
-        cm = confusion_matrix(self.y_test, y_hat)
-        
-        cm_plot = plot_confusion_matrix(cm=cm, target_names=target_names)
-        cm_plot.savefig(cm_path)
+        model_ = self.load_model(model_path=model_path)
 
-        print_classification_report(y_true=self.y_test, y_hat=y_hat)
+        with mlflow.start_run(run_name=f'{self.estimator_name}_test'):
+            y_hat = model_.predict(self.X_test)
+            mlflow.log_params(self.params)
+            mlflow.log_metrics({"accuracy": accuracy_score(self.y_test, y_hat), 
+                                "recall": recall_score(self.y_test, y_hat, average='binary')})
+            mlflow.sklearn.log_model(model_, artifact_path="models")
+
+            cm = confusion_matrix(self.y_test, y_hat)
+            
+            cm_plot = plot_confusion_matrix(cm=cm, target_names=target_names)
+            cm_plot.savefig(cm_path)
+            mlflow.log_figure(cm_plot, cm_path)
+
+            print_classification_report(y_true=self.y_test, y_hat=y_hat)
     
     def cross_validation(self, cv: int = 5) -> None:
         scores = cross_val_score(self.pipeline, self.X_train, self.y_train, cv=cv)
@@ -123,6 +145,6 @@ class KidneyRiskModel:
             None
         '''
         with open(model_path, 'rb') as f:
-            self.clf = pickle.load(f)
+            clf_loaded = pickle.load(f)
 
-        return self
+        return clf_loaded
