@@ -13,7 +13,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, recall_score, make_scorer, ConfusionMatrixDisplay, confusion_matrix, classification_report
-
+import mlflow
+import mlflow.sklearn
 class UnsupportedClassifier(Exception):
     '''
     Class to handle unsupported estimators, inherits from Exception
@@ -50,6 +51,7 @@ class KidneyRiskModel:
         }
     
     def train(self) -> None:
+        mlflow.set_experiment("ckd-experiment_train")
         '''
         Train model
 
@@ -67,13 +69,22 @@ class KidneyRiskModel:
 
         clf = estimator(**self.params)
         print(type(self.y_train))
-
-        clf.fit(self.X_train, self.y_train)
+        with mlflow.start_run(run_name=self.clf):
+            clf.fit(self.X_train, self.y_train)
+            mlflow.log_params(self.params)
+            # Calculate metrics
+            # acc = accuracy_score(y_test, y_pred)
+            # prec = precision_score(y_test, y_pred, average='weighted')
+            # rec = recall_score(y_test, y_pred, average='weighted')
+            # mlflow.log_metrics({"accuracy": acc, "precision": prec, "recall": rec})
+            mlflow.sklearn.log_model(self.clf, artifact_path="models")
         
         self.clf = clf
+            
         return self
     
     def evaluate(self, model_path: Text, target_names: Text, cm_path: Text) -> None:
+        mlflow.set_experiment("ckd-experiment_evaluate")
         '''
         Evaluate model
 
@@ -84,14 +95,18 @@ class KidneyRiskModel:
             None
         '''
         model = self.load_model(model_path=model_path)
+        with mlflow.start_run(run_name="evaluate_model"):
+            y_hat = model.predict(self.X_test)
+            mlflow.log_metrics({"accuracy": accuracy_score(self.y_test, y_hat), "recall": recall_score(self.y_test, y_hat, average='weighted')})
+            mlflow.sklearn.log_model(self.clf, artifact_path="models")
 
-        y_hat = model.predict(self.X_test)
-        cm = confusion_matrix(self.y_test, y_hat)
-        
-        cm_plot = plot_confusion_matrix(cm=cm, target_names=target_names)
-        cm_plot.savefig(cm_path)
+            cm = confusion_matrix(self.y_test, y_hat)
+            
+            cm_plot = plot_confusion_matrix(cm=cm, target_names=target_names)
+            cm_plot.savefig(cm_path)
+            mlflow.log_artifact(cm_path)
 
-        print_classification_report(y_true=self.y_test, y_hat=y_hat)
+            print_classification_report(y_true=self.y_test, y_hat=y_hat)
     
     def cross_validation(self, cv: int = 5) -> None:
         scores = cross_val_score(self.pipeline, self.X_train, self.y_train, cv=cv)

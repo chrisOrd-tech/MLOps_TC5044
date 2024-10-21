@@ -4,6 +4,8 @@ stages:
       export PYTHONPATH=$(pwd) && python src/stages/load_data.py --config=params.yaml
     deps:
     - src/stages/load_data.py
+    outs:
+    - data/processed/ckd_dataset_clean.csv
   
   preprocess:
     cmd: |
