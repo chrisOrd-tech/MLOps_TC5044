@@ -30,6 +30,13 @@ train:
     svc_model: # sklearn.svm.SVC
       params: {'C': 0.9643857615941438, 'degree': 3, 'gamma': '0.1', 'kernel': 'rbf', 'tol': 0.01}
       model_path: './models/model_SVC.pkl'
+  # Model 3
+  estimator_name: knn_model
+  estimators:
+    knn_model: # sklearn.neighbors.KNeighborsClassifier
+      params: {'n_neighbors': 5, 'algorithm': auto, 'leaf_size': 30, 'p': 2, 'weights': uniform}
+      model_path: './models/model_KNN.pkl'
+
 
 evaluate:
   # metrics, images, etc.
@@ -39,3 +46,9 @@ evaluate:
     log_reg:
       metrics_file: 'metrics_log_reg.json'
       confusion_matrix_img: 'confusion_matrix_log_reg.png'
+    svc_model:
+      metrics_file: 'metrics_svc_model.json'
+      confusion_matrix_img: 'confusion_matrix_svc_modle.png'
+    knn_model:
+      metrics_file: 'metrics_knn_model.json'
+      confusion_matrix_img: 'confusion_matrix_knn_mod.png'
