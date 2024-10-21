@@ -1,0 +1,16 @@
+artifact_uri: file:///home/chrisorduna/Repositories/MNA/MLOps_TC5044/mlruns/523184681068119857/8ff650db7c5a4d3496011f49a1645480/artifacts
+deleted_time: 1729481762141
+end_time: 1729480401349
+entry_point_name: ''
+experiment_id: '523184681068119857'
+lifecycle_stage: deleted
+run_id: 8ff650db7c5a4d3496011f49a1645480
+run_name: log_reg
+run_uuid: 8ff650db7c5a4d3496011f49a1645480
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1729480399611
+status: 3
+tags: []
+user_id: chrisorduna

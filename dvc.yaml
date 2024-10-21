@@ -39,8 +39,5 @@ stages:
     - src/KidneyRiskModel/module.py
     - models/model_${train.estimator_name}.pkl
     - src/stages/evaluate.py
-    outs:
-    - reports/confusion_matrix_${train.estimator_name}.png
-    - reports/metrics_${train.estimator_name}.json
     params:
     - train.estimator_name

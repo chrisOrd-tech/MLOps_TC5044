@@ -24,13 +24,14 @@ def evaluate_model(config_path: Text) -> None:
     reports_path = config['evaluate']['reports_dir']
     target_names = config['evaluate']['target_names']
     cm_img = config['evaluate']['estimators'][estimator_name]['confusion_matrix_img']
+    params = config['train']['estimators'][estimator_name]['params']
 
     cm_path = os.path.join(reports_path, cm_img)
 
     X_test = pd.read_csv(X_test_path)
     y_test = pd.read_csv(y_test_path)
 
-    model = KidneyRiskModel(estimator_name=estimator_name, X_train=None, y_train=None, X_test=X_test, y_test=y_test, params={})
+    model = KidneyRiskModel(estimator_name=estimator_name, X_train=None, y_train=None, X_test=X_test, y_test=y_test['class'], params=params)
 
     model.evaluate(model_path=model_path, target_names=target_names, cm_path=cm_path)
 

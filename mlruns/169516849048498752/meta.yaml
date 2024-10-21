@@ -1,0 +1,6 @@
+artifact_location: file:///home/chrisorduna/Repositories/MNA/MLOps_TC5044/mlruns/169516849048498752
+creation_time: 1729482412279
+experiment_id: '169516849048498752'
+last_update_time: 1729482412279
+lifecycle_stage: active
+name: ckd-experiment_knn_model_evaluate

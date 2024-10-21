@@ -1,0 +1,7 @@
+artifact_location: file:///home/chrisorduna/Repositories/MNA/MLOps_TC5044/mlruns/523184681068119857
+creation_time: 1729479996498
+experiment_id: '523184681068119857'
+last_update_time: 1729481762141
+lifecycle_stage: deleted
+name: ckd-experiment_train
+tags: {}

@@ -1,0 +1,15 @@
+artifact_uri: file:///home/chrisorduna/Repositories/MNA/MLOps_TC5044/mlruns/970213873333714528/646b7c83347f4ae986903b5929e0e426/artifacts
+end_time: 1729482367471
+entry_point_name: ''
+experiment_id: '970213873333714528'
+lifecycle_stage: active
+run_id: 646b7c83347f4ae986903b5929e0e426
+run_name: knn_model_train
+run_uuid: 646b7c83347f4ae986903b5929e0e426
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1729482365731
+status: 3
+tags: []
+user_id: chrisorduna
