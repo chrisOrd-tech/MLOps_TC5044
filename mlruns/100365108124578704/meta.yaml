@@ -1,0 +1,6 @@
+artifact_location: file:///home/chrisorduna/Repositories/MNA/MLOps_TC5044/mlruns/100365108124578704
+creation_time: 1730421592228
+experiment_id: '100365108124578704'
+last_update_time: 1730421592228
+lifecycle_stage: active
+name: ckd-experiment_svc_train
