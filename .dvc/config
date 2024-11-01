@@ -1,8 +1,4 @@
 [core]
-    remote = remote-storage
+    remote = local_remote
 ['remote "local_remote"']
     url = /home/chrisorduna/Repositories/MNA/MLOps/Local_Remote
-['remote "gdrive"']
-    url = gdrive://1vrXEi3-9bdldszq7FNvx1sYzl7rNZFcK
-['remote "remote-storage"']
-    url = gdrive://1vrXEi3-9bdldszq7FNvx1sYzl7rNZFcK
