@@ -1,4 +1,4 @@
-scikit-learn>=0.23
+scikit-learn
 pandas
 seaborn
 matplotlib
