@@ -11,5 +11,5 @@ pytest-dependency
 pre-commit
 mlflow
 sdv
-pytest
+ipytest
 deepchecks
