@@ -75,3 +75,12 @@ class TestModel():
         model_instance = instances[model_setup.estimator_name]
 
         assert isinstance(loaded_model, model_instance)
+
+
+    def test_prediction_values(self, model_setup):
+
+        trained_model = model_setup.train()
+        y_hat = trained_model.clf.predict(model_setup.X_test)
+
+        # Verify predictions are in the expected range of classes
+        assert set(y_hat).issubset(set(model_setup.y_test.unique()))
