@@ -1,10 +1,9 @@
-scikit-learn>=0.23
+scikit-learn
 pandas
 seaborn
 matplotlib
 joblib
 numpy
-ibm_watson_machine_learning
 pyyaml
 pytest
 pytest-dependency
@@ -14,3 +13,5 @@ sdv
 pytest
 deepchecks
 coverage
+ipytest
+dvc

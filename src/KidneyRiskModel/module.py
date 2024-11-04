@@ -33,6 +33,8 @@ class KidneyRiskModel:
         self.y_test = y_test
         self.params = params
 
+        mlflow.set_tracking_uri('http://localhost:5000')
+
     @staticmethod
     def get_supported_estimators() -> Dict:
         '''

@@ -1,0 +1,6 @@
+artifact_location: file:///home/chrisorduna/Repositories/MNA/MLOps_TC5044/mlruns/623647521002329224
+creation_time: 1730421534412
+experiment_id: '623647521002329224'
+last_update_time: 1730421534412
+lifecycle_stage: active
+name: ckd-experiment_unsupported_model_train
