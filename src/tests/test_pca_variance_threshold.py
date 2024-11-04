@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from .module import PCAVarianceThreshold
+from src.PCAVarianceThreshold.module import PCAVarianceThreshold
 
 # src/PCAVarianceThreshold/test_module.py
 

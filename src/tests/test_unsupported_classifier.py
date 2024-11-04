@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from src.model.model import train, UnsupportedClassifier
 
-# src/model/test_model.py
 
 
 @pytest.fixture

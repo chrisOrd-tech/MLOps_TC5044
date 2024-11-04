@@ -74,3 +74,5 @@ minio_data/*
 
 kidney-app/*
 db_data/*
+
+mlruns/*

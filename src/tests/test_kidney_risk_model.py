@@ -8,8 +8,6 @@ from sklearn.neighbors import KNeighborsClassifier
 import os
 import pickle
 
-# src/KidneyRiskModel/test_module.py
-
 
 @pytest.fixture
 def sample_data():
