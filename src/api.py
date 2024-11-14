@@ -12,9 +12,6 @@ import os
 with open(os.getcwd()+"/models/lr_model_pca.pkl", "rb") as f:
     model = pickle.load(f)
 
-# Load target names for response
-# data = load_wine()
-# target_names = data.target_names
 
 # Define the input data format for prediction
 class KidneyData(BaseModel):
@@ -42,7 +39,7 @@ def predict(kidney_data: KidneyData):
 # Define a root endpoint
 @app.get("/")
 def read_root():
-    return {"message": "Wine classification model API"}
+    return {"message": "Kidney risk model classification model API"}
 
 # Run the server
 if __name__ == "__main__":
