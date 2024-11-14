@@ -4,8 +4,8 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the model and server code
-COPY models/model_log_reg.pkl /app/
-COPY src/api.py /app/
+COPY ./model_knn_model.pkl /app/
+COPY ./src/api.py /app/
 
 # Install dependencies
 RUN pip install fastapi uvicorn scikit-learn pydantic
